@@ -1,7 +1,11 @@
+using api.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddHttpClient<GeminiService>();
+
 
 // Add CORS configuration
 builder.Services.AddCors(options =>
