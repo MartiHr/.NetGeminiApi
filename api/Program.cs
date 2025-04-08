@@ -12,7 +12,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000")  // Allow requests from React frontend
+        policy.WithOrigins("http://localhost:5173")  // Allow requests from React frontend
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
