@@ -5,7 +5,7 @@ import Chat from './components/Chat';
 const App = () => {
   return (
     <div>
-      <h1>Welcome to the Chat App</h1>
+      <h1>Welcome to the Chat App for .NetGeminiApi </h1>
       <Chat />
     </div>
   );

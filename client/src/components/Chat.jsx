@@ -1,62 +1,69 @@
 import React, { useState } from 'react';
 
-const Chat = () => {
-  const [history, setHistory] = useState([]);
-  const [input, setInput] = useState('');
-  const [response, setResponse] = useState('');
+function App() {
+    const [history, setHistory] = useState([]);
+    const [inputText, setInputText] = useState('');
+    const [response, setResponse] = useState('');
 
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-  };
+    // Function to handle submitting the conversation history to the API
+    const handleSubmit = async () => {
+        const newHistory = [...history, inputText];
+        setHistory(newHistory);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+        // Prepare the request payload
+        const payload = newHistory;
 
-    const newHistory = [...history, { UserMessage: input }];
-    setHistory(newHistory);
+        try {
+            // Make a POST request to your .NET API
+            const res = await fetch('https://localhost:7109/gemini/generate', { // API URL with HTTPS
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
 
-    try {
-      // Send user input to the backend API
-      const res = await fetch('https://localhost:7109/gemini/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newHistory),
-      });
-      const data = await res.json();
-      setResponse(data); // Store the response in state
-    } catch (error) {
-      console.error('Error:', error);
-    }
+            if (res.ok) {
+                const data = await res.json();
+                setResponse(data.response);
+            } else {
+                throw new Error('Failed to fetch the response');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
-    setInput(''); // Reset input field
-  };
 
-  return (
-    <div>
-      <h1>Chat with AI</h1>
-      <div>
-        {history.map((message, index) => (
-          <div key={index}>
-            <strong>User:</strong> {message.UserMessage}
-            <br />
-            <strong>AI:</strong> {message.AiResponse}
-          </div>
-        ))}
-      </div>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={input}
-          onChange={handleInputChange}
-          placeholder="Type your message"
-        />
-        <button type="submit">Send</button>
-      </form>
-      {response && <div><strong>AI Response:</strong> {response}</div>}
-    </div>
-  );
-};
+    return (
+        <div>
+            <h1>Gemini AI Interaction</h1>
 
-export default Chat;
+            <div>
+                <h3>Conversation History</h3>
+                <ul>
+                    {history.map((msg, index) => (
+                        <li key={index}>{msg}</li>
+                    ))}
+                </ul>
+            </div>
+
+            <div>
+                <textarea
+                    placeholder="Type your message..."
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                />
+            </div>
+
+            <button onClick={handleSubmit}>Send</button>
+
+            <div>
+                <h3>Response:</h3>
+                <p>{response}</p>
+            </div>
+        </div>
+    );
+}
+
+export default App;
