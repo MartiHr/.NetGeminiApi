@@ -15,10 +15,14 @@ namespace api.Controllers
         }
 
         [HttpPost("generate")]
-        public async Task<IActionResult> GenerateContent([FromBody] string prompt)
+        public async Task<IActionResult> GenerateContent([FromBody] List<string> history)
         {
-            var result = await geminiService.GenerateContentAsync(prompt);
-            return Ok(result);
+            var result = await geminiService.GenerateContentAsync(history);
+
+            var text = result?.Candidates?.FirstOrDefault()?.Content?.Parts?
+                .FirstOrDefault()?.Text;
+
+            return Ok(new { response = text });
         }
     }
 }
